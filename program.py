@@ -1,8 +1,9 @@
 from docx               import Document
-from docx.shared        import Pt, RGBColor, Inches
-from docx.enum.text     import WD_PARAGRAPH_ALIGNMENT
+from docx.shared        import Pt, RGBColor, Inches, Cm
+from docx.enum.text     import WD_PARAGRAPH_ALIGNMENT, WD_UNDERLINE, WD_LINE_SPACING
 from docx.enum.style    import WD_STYLE_TYPE
-from docx.enum.text     import WD_UNDERLINE, WD_LINE_SPACING
+from docx.enum.table     import WD_TABLE_ALIGNMENT
+
 
 # *********************************************************
 #                      PAGE 1 FUNCTIONS
@@ -111,7 +112,7 @@ def addKoalaImage_P1(document):
     # print(dir(document))
     # print(help(document.add_picture))
 
-    imgPath = 'resources\koalaOriginal - Copia.jpg'
+    imgPath = 'resources\koalaOriginal-Copia.jpg'
     imgW = Inches(5.79)
     imgH = Inches(5.69)
 
@@ -124,18 +125,67 @@ def addKoalaImage_P1(document):
 # *********************************************************
 #                      PAGE 2 FUNCTIONS
 # *********************************************************
+
+data = {
+    "Title": "Adicionando uma tabela ao documento e usando uma base de dados",
+    "Content": [
+        {
+            "Chapter": "Chapter 1 Text",
+            "Text": "This is my text 1 \n This is still my text 1",
+            "Image": "resources\koalaOriginal-Copia.jpg",
+            "Table": ["A", "B", "C"]
+        },
+        {
+            "Chapter": "Chapter 2 Text",
+            "Text": "This is my text 2 \n This is still my text 2",
+            "Image": "resources\koalaOriginal-Copia.jpg",
+            "Table": ["1", "2", "3"]
+        },
+        {
+            "Chapter": "Chapter 3 Text",
+            "Text": "This is my text 3 \n This is still my text 3",
+            "Image": "resources\koalaOriginal-Copia.jpg",
+            "Table": ["1", "2", "3"]
+        },
+    ]
+}
+
 def addTitle_P2(document):
+    title2 = document.add_heading(data.get("Title"), level=1)
+    title2.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
-    document.add_paragraph("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.")
+    for content in data.get("Content"):
+        # Add paragraph with h2
+        document.add_paragraph(content.get("Chapter"))
+        # Add paragraph 
+        document.add_paragraph(content.get("Text"))
+        # Add Image
+        document.add_picture(content.get("Image"), width=Inches(1.25))
+        # Add Table 
+        document.add_heading("Table", level=3)
+        table = document.add_table(rows=1, cols=3, style="Table Grid")
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        table.autofit = False
+        hdr_cells = table.rows[0].cells
+        hdr_cells[0].text = "Col_1"
+        hdr_cells[1].text = "Col_2"
+        hdr_cells[2].text = "Col_3"
+        row_cells = table.add_row().cells
 
-    ...
+        for idx, element in enumerate(content.get("Table")):
+            row_cells[idx].text = element
+        
+
+
+
+# ...
 # END def addTitle_P2
 
-def addTable_P2(document):
-
-
-    ...
+# def addTable_P2(document):
+#     ...
 # END def addTable_P2
+
+
 
 
 # *********************************************************
@@ -184,6 +234,6 @@ addKoalaImage_P1(document)
 
 # PAGE 2 
 addTitle_P2(document)
-addTable_P2(document)
+# addTable_P2(document)
 
 document.save('koala.docx')
